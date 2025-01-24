@@ -167,3 +167,27 @@ textarea:focus {
   transform: rotateY(70deg);
   animation-delay: 0.4s;
 }
+
+.load-more-btn {
+  display: none;
+  margin: 20px auto;
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.75);
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.75);
+}
+
+.load-more-btn:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.load-more-btn:active {
+  background-color: #003f7f;
+}

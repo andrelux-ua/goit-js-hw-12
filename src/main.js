@@ -7,11 +7,25 @@ import SimpleLightbox from 'simplelightbox';
 const searchForm = document.querySelector('.search-form');
 const inputText = document.querySelector('.search-form input');
 const loader = document.querySelector('.loader');
-let lightbox;
+const loadMoreBtn = document.createElement('button');
+
+loadMoreBtn.className = 'load-more-btn';
+loadMoreBtn.textContent = 'Load more';
+loadMoreBtn.style.display = 'none';
+document.querySelector('.gallery-container').appendChild(loadMoreBtn);
+
+let currentPage = 1;
+let currentQuery = '';
+let totalHits = 0;
+
+const lightbox = new SimpleLightbox('.gallery-item a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+});
 
 searchForm.addEventListener('submit', handleForm);
 
-function handleForm(event) {
+async function handleForm(event) {
   event.preventDefault();
   const inputValue = inputText.value.trim();
 
@@ -23,55 +37,127 @@ function handleForm(event) {
     });
   }
 
-  showLoader();
+  currentQuery = inputValue;
+  currentPage = 1;
+  clearGallery();
+  toggleLoader(true);
 
-  fetchData(inputValue)
-    .then(res => {
-      if (res && res.length > 0) {
-        formResults(res);
-        if (lightbox) {
-          lightbox.refresh();
-        } else {
-          lightbox = new SimpleLightbox('.gallery-item a', {
-            captionsData: 'alt',
-            captionDelay: 250,
-          });
-        }
-      }
-    })
-    .catch(error => {
-      iziToast.error({
-        position: 'topRight',
-        title: 'Error',
-        message: 'An error occurred. Please try again!',
-        backgroundColor: '#FFFF00',
-      });
-    })
-    .finally(() => {
-      hideLoader();
-      searchForm.reset();
+  try {
+    const { images, totalHits: hits } = await fetchData(
+      currentQuery,
+      currentPage
+    );
+    totalHits = hits;
+
+    if (images.length > 0) {
+      formResults(images);
+      lightbox.refresh();
+      toggleLoadMoreBtn(images.length);
+    }
+  } catch (error) {
+    iziToast.error({
+      position: 'topRight',
+      title: 'Error',
+      message: 'An error occurred. Please try again!',
+      backgroundColor: '#FFFF00',
     });
+  } finally {
+    toggleLoader(false);
+    searchForm.reset();
+  }
 }
 
-function showLoader() {
-  loader.style.display = 'block';
+loadMoreBtn.addEventListener('click', async () => {
+  currentPage++;
+  toggleLoader(true);
+
+  try {
+    const { images } = await fetchData(currentQuery, currentPage);
+    formResults(images);
+    lightbox.refresh();
+    toggleLoadMoreBtn(images.length);
+    smoothScroll();
+  } catch (error) {
+    iziToast.error({
+      position: 'topRight',
+      title: 'Error',
+      message: 'An error occurred. Please try again!',
+      backgroundColor: '#FFFF00',
+    });
+  } finally {
+    toggleLoader(false);
+  }
+});
+
+function toggleLoader(show) {
+  loader.style.display = show ? 'block' : 'none';
 }
 
-function hideLoader() {
-  loader.style.display = 'none';
+function toggleLoadMoreBtn(count) {
+  loadMoreBtn.style.display =
+    count > 0 && totalHits > currentPage * 15 ? 'block' : 'none';
 }
 
-// JavaScript for animated placeholder in input
+function clearGallery() {
+  document.querySelector('.gallerylist').innerHTML = '';
+}
 
+function smoothScroll() {
+  const firstCard = document.querySelector('.gallerylist .gallery-item');
+  if (!firstCard) return;
+  const { height: cardHeight } = firstCard.getBoundingClientRect();
+
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: 'smooth',
+  });
+}
+
+// Animated placeholder for search input
 const inputField = document.querySelector('.search-form input');
 const placeholderTexts = [
+  'S',
+  'Se',
+  'Sea',
+  'Sear',
+  'Searc',
+  'Search ',
+  'Search i',
+  'Search im',
+  'Search ima',
+  'Search imag',
+  'Search image',
+  'Search images',
+  'Search images.',
+  'Search images..',
   'Search images...',
-  'car',
+  'c',
+  'ca',
   'cat',
-  'room',
+  'b',
+  'bo',
+  'boo',
+  'book',
   'books',
+  'r',
+  'ro',
+  'roo',
+  'room',
+  'f',
+  'fo',
+  'for',
+  'fore',
+  'fores',
   'forest',
+  'g',
+  'ga',
+  'gar',
+  'gard',
+  'garde',
   'garden',
+  's',
+  'sp',
+  'spac',
   'space',
 ];
 let currentIndex = 0;
@@ -83,19 +169,15 @@ function updatePlaceholder() {
 }
 
 function startPlaceholderAnimation() {
-  intervalId = setInterval(updatePlaceholder, 2000);
+  intervalId = setInterval(updatePlaceholder, 365);
 }
 
 function stopPlaceholderAnimation() {
   clearInterval(intervalId);
 }
 
-// Stop animation when the input is focused
 inputField.addEventListener('focus', stopPlaceholderAnimation);
-
-// Restart animation when the input loses focus
 inputField.addEventListener('blur', startPlaceholderAnimation);
 
-// Initialize the first placeholder text and start animation
 updatePlaceholder();
 startPlaceholderAnimation();

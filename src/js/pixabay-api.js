@@ -1,50 +1,45 @@
+import axios from 'axios';
 import iziToast from 'izitoast';
 
 const API_KEY = '48292136-dc008af678147f60b21a3f0d6';
 const API_URL = 'https://pixabay.com/api/';
 
-export function fetchData(inputValue) {
-  const options = new URLSearchParams({
-    key: API_KEY,
-    q: inputValue,
-    image_type: 'photo',
-    orientation: 'horizontal',
-    safesearch: true,
-    per_page: 21,
-  });
+export async function fetchData(inputValue, page = 1, perPage = 15) {
+  try {
+    const params = {
+      key: API_KEY,
+      q: inputValue,
+      image_type: 'photo',
+      titleColor: '#000000',
+      messageColor: '#000000',
+      orientation: 'horizontal',
+      safesearch: true,
+      per_page: perPage,
+      page,
+    };
 
-  const urlWithParams = `${API_URL}?${options.toString()}`;
+    const { data } = await axios.get(API_URL, { params });
 
-  return fetch(urlWithParams)
-    .then(res => {
-      if (!res.ok) {
-        throw new Error('Failed to fetch images.');
-      }
-      return res.json();
-    })
-    .then(data => {
-      if (data.hits.length === 0) {
-        iziToast.error({
-          title: 'No Results',
-          message:
-            'Sorry, there are no images matching your search query. Please try again!',
-          titleColor: '#000000',
-          messageColor: '#000000',
-          position: 'topRight',
-          backgroundColor: '#FFFF00',
-        });
-        return [];
-      }
-      return data.hits;
-    })
-    .catch(err => {
+    if (data.hits.length === 0) {
       iziToast.error({
-        title: 'Error',
-        message: 'An error occurred while fetching data.',
+        title: 'No Results',
+        message: 'No images match your query. Please try again.',
         titleColor: '#000000',
         messageColor: '#000000',
         position: 'topRight',
         backgroundColor: '#FFFF00',
       });
+      return { images: [], totalHits: 0 };
+    }
+
+    return { images: data.hits, totalHits: data.totalHits };
+  } catch (error) {
+    iziToast.error({
+      title: 'Error',
+      message: 'Failed to fetch data.',
+      position: 'topRight',
+      backgroundColor: '#FF0000',
     });
+    throw error;
+  }
 }

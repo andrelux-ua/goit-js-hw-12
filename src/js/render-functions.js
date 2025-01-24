@@ -17,16 +17,15 @@ export function formResults(images) {
                 <img class="gallery-image" src="${webformatURL}" alt="${tags}" width="360" height="200"/>
             </a>
             <div class="info">
-                <p class="info-text"><b class="info-rating">Likes:</b> ${likes}</p>
-                <p class="info-text"><b class="info-rating">Views:</b> ${views}</p>
-                <p class="info-text"><b class="info-rating">Comments:</b> ${comments}</p>
-                <p class="info-text"><b class="info-rating">Downloads:</b> ${downloads}</p>
+                <p class="info-text"><b>Likes:</b> ${likes}</p>
+                <p class="info-text"><b>Views:</b> ${views}</p>
+                <p class="info-text"><b>Comments:</b> ${comments}</p>
+                <p class="info-text"><b>Downloads:</b> ${downloads}</p>
             </div>
         </div>
     `
     )
     .join('');
 
-  render.innerHTML = '';
   render.insertAdjacentHTML('beforeend', markup);
 }
