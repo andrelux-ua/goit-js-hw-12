@@ -41,7 +41,7 @@ async function handleForm(event) {
   currentPage = 1;
   clearGallery();
   toggleLoader(true);
-  loadMoreBtn.style.display = 'none'; // Ensure button is hidden during loading
+  loadMoreBtn.style.display = 'none';
 
   try {
     const { images, totalHits: hits } = await fetchData(
@@ -60,7 +60,7 @@ async function handleForm(event) {
         title: 'No Results',
         message: 'Sorry, there are no images matching your search query.',
       });
-      loadMoreBtn.style.display = 'none'; // Hide button if no results
+      loadMoreBtn.style.display = 'none';
     }
   } catch (error) {
     iziToast.error({
@@ -78,7 +78,7 @@ async function handleForm(event) {
 loadMoreBtn.addEventListener('click', async () => {
   currentPage++;
   toggleLoader(true);
-  loadMoreBtn.style.display = 'none'; // Ensure button is hidden during loading
+  loadMoreBtn.style.display = 'none';
 
   try {
     const { images } = await fetchData(currentQuery, currentPage);
@@ -88,7 +88,7 @@ loadMoreBtn.addEventListener('click', async () => {
     smoothScroll();
 
     if (currentPage * 15 >= totalHits) {
-      loadMoreBtn.style.display = 'none'; // Hide button if end of results is reached
+      loadMoreBtn.style.display = 'none';
       iziToast.info({
         title: 'End of Results',
         message: "We're sorry, but you've reached the end of search results.",
