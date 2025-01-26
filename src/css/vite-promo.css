@@ -191,3 +191,9 @@ textarea:focus {
 .load-more-btn:active {
   background-color: #003f7f;
 }
+
+.result-end {
+  font-size: 16px;
+  letter-spacing: 0.075em;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.09);
+}

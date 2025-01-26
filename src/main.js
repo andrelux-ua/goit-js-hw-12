@@ -58,15 +58,20 @@ async function handleForm(event) {
       iziToast.info({
         position: 'topRight',
         title: 'No Results',
-        message: 'Sorry, there are no images matching your search query.',
+        message:
+          'Sorry, there are no images matching your search query. Please try again!',
+        position: 'topRight',
+        titleColor: '#000000',
+        messageColor: '#000000',
+        backgroundColor: '#FFFF00',
+        class: 'result-end',
       });
-      loadMoreBtn.style.display = 'none';
     }
   } catch (error) {
     iziToast.error({
       position: 'topRight',
       title: 'Error',
-      message: 'An error occurred. Please try again!',
+      message: error.message,
       backgroundColor: '#FFFF00',
     });
   } finally {
@@ -93,13 +98,17 @@ loadMoreBtn.addEventListener('click', async () => {
         title: 'End of Results',
         message: "We're sorry, but you've reached the end of search results.",
         position: 'topRight',
+        titleColor: '#FFFFFF',
+        messageColor: '#FFFFFF',
+        backgroundColor: '#7B68EE',
+        class: 'result-end',
       });
     }
   } catch (error) {
     iziToast.error({
       position: 'topRight',
       title: 'Error',
-      message: 'An error occurred. Please try again!',
+      message: error.message,
       backgroundColor: '#FFFF00',
     });
   } finally {
